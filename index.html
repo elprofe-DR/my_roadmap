@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Automation Roadmap</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --brand-emerald: #059669;
+            --brand-emerald-light: #d1fae5;
+            --brand-stone-text: #374151;
+            --brand-stone-light: #f5f5f4;
+            --brand-stone-mid: #a8a29e;
+            --brand-amber: #f59e0b; /* For business tasks */
+            --brand-amber-light: #fefce8;
+            --brand-red: #dc2626; /* For aggressive tasks */
+            --brand-red-light: #fee2e2;
+        }
+
+        .loader {
+            width: 50px;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            border: 8px solid var(--brand-emerald-light);
+            border-right-color: var(--brand-emerald);
+            animation: l2 1s infinite linear;
+        }
+        @keyframes l2 { to { transform: rotate(1turn) } }
+
+        .tab-button.active {
+            border-color: var(--brand-emerald);
+            color: var(--brand-emerald);
+            background-color: var(--brand-emerald-light);
+        }
+        .sub-tab-button.active {
+            background-color: var(--brand-emerald);
+            color: white;
+        }
+
+        .page-content {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Checkbox & Task List Styles */
+        li.task-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem; /* 12px */
+            padding-top: 0.35rem;
+            padding-bottom: 0.35rem;
+        }
+        .task-checkbox {
+            flex-shrink: 0;
+            width: 1rem; /* 16px */
+            height: 1rem; /* 16px */
+            margin-top: 0.30rem; /* Align with text */
+            border-radius: 0.25rem; /* 4px */
+            border-color: var(--brand-stone-mid);
+            cursor: pointer;
+        }
+        .task-checkbox:checked {
+            accent-color: var(--brand-emerald);
+        }
+        li.task-item.completed > span {
+            color: var(--brand-stone-mid);
+            text-decoration: line-through;
+        }
+        
+        /* Day Block Structure Styles */
+        .day-block {
+            border: 1px solid #e7e5e4; /* stone-200 */
+            border-radius: 0.5rem; /* rounded-lg */
+            padding: 1rem; /* p-4 */
+            margin-bottom: 1rem; /* space-y-4 */
+            background-color: #ffffff;
+        }
+        
+        .learning-task {
+            background-color: #f0fdfa; /* emerald-50 */
+            border-radius: 0.375rem; /* rounded-md */
+            padding: 0.75rem; /* p-3 */
+            border-left: 4px solid var(--brand-emerald);
+        }
+        .learning-task h5 {
+            font-weight: 600; /* font-semibold */
+            color: #065f46; /* emerald-800 */
+            margin-bottom: 0.5rem;
+        }
+        
+        .application-task {
+            background-color: #f5f5f4; /* stone-100 */
+            border-radius: 0.375rem; /* rounded-md */
+            padding: 0.75rem; /* p-3 */
+            border-left: 4px solid var(--brand-stone-mid);
+        }
+        .application-task h5 {
+            font-weight: 600; /* font-semibold */
+            color: #44403c; /* stone-700 */
+            margin-bottom: 0.5rem;
+        }
+
+        /* Business Task Style */
+        .business-task {
+            background-color: var(--brand-amber-light); /* yellow-50 */
+            border-radius: 0.375rem; /* rounded-md */
+            padding: 0.75rem; /* p-3 */
+            border-left: 4px solid var(--brand-amber); /* amber-400 */
+        }
+        .business-task h5 {
+            font-weight: 600; /* font-semibold */
+            color: #b45309; /* amber-700 */
+            margin-bottom: 0.5rem;
+        }
+        .business-task .task-checkbox:checked {
+            accent-color: var(--brand-amber);
+        }
+
+        /* Aggressive Task Style */
+        .aggressive-task {
+            background-color: var(--brand-red-light); /* red-50 */
+            border-radius: 0.375rem; /* rounded-md */
+            padding: 0.75rem; /* p-3 */
+            border-left: 4px solid var(--brand-red); /* red-600 */
+        }
+        .aggressive-task h5 {
+            font-weight: 600; /* font-semibold */
+            color: #b91c1c; /* red-700 */
+            margin-bottom: 0.5rem;
+        }
+        .aggressive-task .task-checkbox:checked {
+            accent-color: var(--brand-red);
+        }
+
+
+        /* Code Block Styles */
+        code.task-code {
+            background-color: #e7e5e4; /* stone-200 */
+            border-radius: 0.25rem;
+            padding: 0.2rem 0.4rem;
+            font-family: monospace;
+            font-size: 0.9em;
+            color: var(--brand-emerald);
+        }
+        pre.task-code-block {
+            background-color: #f5f5f4; /* stone-100 */
+            border: 1px solid #e7e5e4; /* stone-200 */
+            border-radius: 0.375rem;
+            padding: 0.75rem;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+            overflow-x: auto;
+            color: var(--brand-stone-text);
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800 overflow-x-hidden">
+    <div class="flex flex-col lg:flex-row min-h-screen overflow-x-hidden">
+        <!-- Header / Sidebar -->
+        <header class="bg-white lg:w-80 lg:min-h-screen p-6 shadow-lg flex flex-col gap-6 z-10">
+            <div class="flex items-center gap-3">
+                <div class="p-3 bg-emerald-100 rounded-lg">
+                    <svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m-2 6h-2M12 3c-1.105 0-2.007.896-2.007 2 0 1.105.902 2 2.007 2s2.007-.895 2.007-2c0-1.104-.902-2-2.007-2zM12 19c-1.105 0-2.007.896-2.007 2 0 1.105.902 2 2.007 2s2.007-.895 2.007-2c0-1.104-.902-2-2.007-2zM5 9c-1.105 0-2.007.896-2.007 2 0 1.105.902 2 2.007 2s2.007-.895 2.007-2c0-1.104-.902-2-2.007-2zM19 9c-1.105 0-2.007.896-2.007 2 0 1.105.902 2 2.007 2s2.007-.895 2.007-2c0-1.104-.902-2-2.007-2z"></path></svg>
+                </div>
+                <h1 class="text-2xl font-bold text-emerald-700">AI Affiliate Bot</h1>
+            </div>
+            <div class="flex-grow space-y-2">
+                <p class="text-stone-700 leading-relaxed">
+                    Your 180-day plan to build an automated affiliate marketing business.
+                </p>
+                <div class="p-3 bg-red-100 border border-red-300 rounded-lg">
+                    <p class="text-sm text-red-700 font-semibold">
+                        Aggressive 3-Hour/Day Plan
+                    </p>
+                    <p class="text-sm text-red-600">
+                        New Goal: Go-live in 4 Months.
+                    </p>
+                </div>
+            </div>
+            <div class="space-y-4 p-4 bg-stone-100 rounded-lg">
+                <h3 class="font-semibold text-stone-800">Your Toolkit</h3>
+                <ul class="text-sm text-stone-600 space-y-2">
+                    <li><span class="font-medium text-emerald-600">Learning:</span> W3Schools, Free Docs</li>
+                    <li><span class="font-medium text-emerald-600">Editor:</span> VS Code (Free)</li>
+                    <li><span class="font-medium text-emerald-600">Language:</span> Python (Free)</li>
+                    <li><span class="font-medium text-emerald-600">Video:</span> Pillow, ffmpeg (Free)</li>
+                    <li><span class="font-medium text-emerald-600">Hosting:</span> PythonAnywhere (Free Tier)</li>
+                </ul>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow p-4 sm:p-6 md:p-10 bg-stone-50/50">
+            <nav class="main-nav bg-white rounded-lg shadow-sm overflow-hidden">
+                <div class="flex flex-nowrap md:flex-wrap overflow-x-auto md:overflow-x-hidden border-b border-stone-300">
+                    <button class="tab-button text-lg font-medium py-3 px-6 border-b-4 border-transparent hover:border-stone-300 hover:text-stone-700 active flex-shrink-0" data-target="home">Dashboard</button>
+                    <button class="tab-button text-lg font-medium py-3 px-6 border-b-4 border-transparent hover:border-stone-300 hover:text-stone-700 flex-shrink-0" data-target="month-1">Month 1</button>
+                    <button class="tab-button text-lg font-medium py-3 px-6 border-b-4 border-transparent hover:border-stone-300 hover:text-stone-700 flex-shrink-0" data-target="month-2">Month 2</button>
+                    <button class="tab-button text-lg font-medium py-3 px-6 border-b-4 border-transparent hover:border-stone-300 hover:text-stone-700 flex-shrink-0" data-target="month-3">Month 3</button>
+                    <button class="tab-button text-lg font-medium py-3 px-6 border-b-4 border-transparent hover:border-stone-300 hover:text-stone-700 flex-shrink-0" data-target="month-4">Month 4</button>
+                    <button class="tab-button text-lg font-medium py-3 px-6 border-b-4 border-transparent hover:border-stone-300 hover:text-stone-700 flex-shrink-0" data-target="month-5">Month 5</button>
+                    <button class="tab-button text-lg font-medium py-3 px-6 border-b-4 border-transparent hover:border-stone-300 hover:text-stone-700 flex-shrink-0" data-target="month-6">Month 6</D>
+                </div>
+            </nav>
+
+            <div class="content-container mt-6">
+                <!-- ======================= -->
+                <!-- ==     Dashboard     == -->
+                <!-- ======================= -->
+                <div id="content-home" class="page-content space-y-6">
+                    <section class="p-6 bg-white rounded-lg shadow-sm">
+                        <h2 class="text-3xl font-bold text-red-700 mb-4">Aggressive Launch Plan: Activated</h2>
+                        <p class="text-stone-700 leading-relaxed max-w-3xl">
+                            You are right. The goal is revenue. This plan has been rebuilt to get your bot *live* and *posting* by Month 4.
+                            <br><br>
+                            This compresses 6 months of tech into 3. It assumes you are now working **3 hours per day**. Months 5 and 6 are no longer "learning" months; they are **"revenue-scaling"** months, dedicated to analyzing your live bot's performance and optimizing it to hit your $3,000/mo goal.
+                            <br><br>
+                            Your new 3-hour day is:
+                            <br>
+                            <span class="inline-flex items-center bg-emerald-100 text-emerald-800 font-medium px-3 py-1 rounded-full">📚 Technical Learning (45 min)</span>
+                            <span class="inline-flex items-center bg-amber-100 text-amber-800 font-medium px-3 py-1 rounded-full">🏆 Business Strategy (45 min)</span>
+                            <span class="inline-flex items-center bg-stone-200 text-stone-800 font-medium px-3 py-1 rounded-full">🔨 Technical Application (90 min)</span>
+                        </p>
+                    </section>
+                </div>
+
+                <!-- ======================= -->
+                <!-- ==     Month 1       == -->
+                <!-- ======================= -->
+                <div id="content-month-1" class="page-content hidden space-y-6">
+                    <section class="p-6 bg-white rounded-lg shadow-sm">
+                        <h2 class="text-3xl font-bold text-emerald-700 mb-4">Month 1: Fundamentals, Niche & Product Selection</h2>
+                        <p class="text-stone-700 leading-relaxed mb-4">
+                            Goal: Learn Python basics and set up your project. Your business goal is to find your profitable niche and your first 10-20 products.
+                        </p>
+                        <div class="flex flex-col md:flex-row gap-4 p-4 bg-emerald-50 rounded-lg">
+                            <div class="md:w-1/2">
+                                <h4 class="font-semibold text-emerald-800">💻 Technical Goal:</h4>
+                                <p class="text-emerald-700">A working `affiliate_bot.py` file with a function-based menu.</p>
+                            </div>
+                            <div class="md:w-1/2 md:border-l border-emerald-200 md:pl-4">
+                                <h4 class="font-semibold text-amber-700">🏆 Business Goal:</h4>
+                                <p class="text-amber-600">A document listing your Niche, your Target Customer, and 10-20 specific affiliate products with their links and commission rates.</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <nav class="flex flex-wrap gap-2">
+                        <button class="sub-tab-button text-sm font-medium py-2 px-4 rounded-full bg-stone-200 text-stone-700 hover:bg-stone-300 active" data-target="m1-week1">Days 1-7: Setup & Niche</button>
+                        <button class="sub-tab-button text-sm font-medium py-2 px-4 rounded-full bg-stone-200 text-stone-700 hover:bg-stone-300" data-target="m1-week2">Days 8-14: Data Types & Platform</button>
+                        <button class="sub-tab-button text-sm font-medium py-2 px-4 rounded-full bg-stone-200 text-stone-700 hover:bg-stone-300" data-target="m1-week3">Days 15-22: Logic & Products</button>
+                        <button class="sub-tab-button text-sm font-medium py-2 px-4 rounded-full bg-stone-200 text-stone-700 hover:bg-stone-300" data-target="m1-week4">Days 23-30: Functions & Strategy</button>
+                    </nav>
+
+                    <div class="sub-content-container bg-white p-6 rounded-lg shadow-sm space-y-4">
+                        <!-- M1-W1 Content -->
+                        <div id="content-m1-week1" class="sub-page-content space-y-4">
+                            
+                            <div class="day-block">
+                                <h4 class="text-lg font-semibold text-emerald-700">Days 1-3: Python & VS Code Setup</h4>
+                                <div class="learning-task">
+                                    <h5>📚 Daily Learning (45 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>What is Python? [Python.org Blurb](https://www.python.org/doc/essays/blurb/).</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>What is "PATH"? [What is PATH?](https://www.computerhope.com/jargon/p/path.htm)</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>What is an IDE? [What is an IDE?](https://www.codecademy.com/article/what-is-an-ide)</span></li>
+                                    </ul>
+                                </div>
+                                <div class="application-task">
+                                    <h5>🔨 Daily Application (90 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Install Python (check "Add to PATH"). Verify with <code class="task-code">python --version</code>.</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Install VS Code.</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Install the "Python" extension (by Microsoft) in VS Code.</span></li>
+                                    </ul>
+                                </div>
+                                <div class="business-task">
+                                    <h5>🏆 Business Strategy (45 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Brainstorm 20 niches. Go to Google Trends. Compare them. Find 5 with high or rising interest.</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="day-block">
+                                <h4 class="text-lg font-semibold text-emerald-700">Days 4-7: "Hello, Bot!" & Niche Selection</h4>
+                                <div class="learning-task">
+                                    <h5>📚 Daily Learning (45 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Learn `print()`: [W3Schools: Python Syntax](https://www.w3schools.com/python/python_syntax.asp)</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Learn Variables: [W3Schools: Python Variables](https://www.w3schools.com/python/python_variables.asp)</span></li>
+                                    </ul>
+                                </div>
+                                <div class="application-task">
+                                    <h5>🔨 Daily Application (90 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Create folder `affiliate_project` and file `affiliate_bot.py`.</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Write <code class="task-code">bot_name = "Affiliate Bot v1"</code>.</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Write <code class="task-code">print(f"{bot_name} is alive!")</code> and run it.</span></li>
+                                    </ul>
+                                </div>
+                                <div class="business-task">
+                                    <h5>🏆 Business Strategy (45 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Research your top 5 niches on YouTube/TikTok. Is there high competition? Are there lots of ads? (This is good).</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>**DECISION:** Select your #1 Niche. (e.g., "AI tools for writers").</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- M1-W2 Content -->
+                        <div id="content-m1-week2" class="sub-page-content hidden space-y-4">
+                            <div class="day-block">
+                                <h4 class="text-lg font-semibold text-emerald-700">Days 8-10: Lists & User Input</h4>
+                                <div class="learning-task">
+                                    <h5>📚 Daily Learning (45 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Learn Lists: [W3Schools: Python Lists](https://www.w3schools.com/python/python_lists.asp)</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Learn `input()`: [W3Schools: Python User Input](https://www.w3schools.com/python/python_user_input.asp)</span></li>
+                                    </ul>
+                                </div>
+                                <div class="application-task">
+                                    <h5>🔨 Daily Application (90 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Create `features` list (see previous answer).</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Add <code class="task-code">choice = input("Enter a number (1-4): ")</code>.</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Add <code class="task-code">print(f"You chose: {choice}")</code>. Run and test.</span></li>
+                                    </ul>
+                                </div>
+                                <div class="business-task">
+                                    <h5>🏆 Business Strategy (45 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Define your "Ideal Customer" in one sentence. (e.g., "My customer is a freelance writer who is overwhelmed by deadlines and curious about AI.").</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="day-block">
+                                <h4 class="text-lg font-semibold text-emerald-700">Days 11-14: Loops, Logic & Platform Selection</h4>
+                                <div class="learning-task">
+                                    <h5>📚 Daily Learning (45 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Learn For Loops: [W3Schools: Python For Loops](https://www.w3schools.com/python/python_for_loops.asp)</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Learn If/Elif/Else: [W3Schools: Python If...Else](https://www.w3schools.com/python/python_conditions.asp)</span></li>
+                                    </ul>
+                                </div>
+                                <div class="application-task">
+                                    <h5>🔨 Daily Application (90 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Create the `for` loop to print the menu neatly (see previous answer).</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Create the full `if/elif/else` block to handle `choice`.</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Run and test all inputs (1, 2, 3, 4, and 5).</span></li>
+                                    </ul>
+                                </div>
+                                <div class="business-task">
+                                    <h5>🏆 Business Strategy (45 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Where does your "Ideal Customer" spend time? (e.g., "Freelance writers are on Twitter/X and YouTube, not TikTok.").</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>**DECISION:** Select *one* platform (e.g., YouTube Shorts, TikTok, X/Twitter, Pinterest).</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- M1-W3 Content -->
+                        <div id="content-m1-week3" class="sub-page-content hidden space-y-4">
+                            <div class="day-block">
+                                <h4 class="text-lg font-semibold text-emerald-700">Days 15-18: Functions (`def`)</h4>
+                                <div class="learning-task">
+                                    <h5>📚 Daily Learning (45 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Learn Functions: [W3Schools: Python Functions](https://www.w3schools.com/python/python_functions.asp)</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Learn `pass`: [GeeksforGeeks: `pass` keyword](https://www.geeksforgeeks.org/python-pass-statement/)</span></li>
+                                    </ul>
+                                </div>
+                                <div class="application-task">
+                                    <h5>🔨 Daily Application (90 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Create `def print_menu():` and move the menu loop inside it.</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Create stub functions (`def find_products(): pass`, etc.) for all features.</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Update your `if/elif` block to *call* these functions.</span></li>
+                                    </ul>
+                                </div>
+                                <div class="business-task">
+                                    <h5>🏆 Business Strategy (45 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Google: "[Your Niche] affiliate program" (e.g., "AI writer affiliate program").</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Find 3-5 programs (e.g., Jasper.ai, Copy.ai, ClickBank, ShareASale).</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="day-block">
+                                <h4 class="text-lg font-semibold text-emerald-700">Days 19-22: `main()` & Product Research</h4>
+                                <div class="learning-task">
+                                    <h5>📚 Daily Learning (45 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Learn `if __name__ == "__main__"`: [Real Python](https://realpython.com/if-name-main-python/)</span></li>
+                                    </ul>
+                                </div>
+                                <div class="application-task">
+                                    <h5>🔨 Daily Application (90 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Create `def main():`.</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Move all logic (`print_menu()` call, `input()` call, `if/elif` block) inside `main()`.</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Add `if __name__ == "__main__": main()` to the bottom. Run and test.</span></li>
+                                    </ul>
+                                </div>
+                                <div class="business-task">
+                                    <h5>🏆 Business Strategy (45 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Sign up for the affiliate programs you found.</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Find 5 specific products. Get your unique affiliate link. Note the commission %.</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- M1-W4 Content -->
+                        <div id="content-m1-week4" class="sub-page-content hidden space-y-4">
+                            <div class="day-block">
+                                <h4 class="text-lg font-semibold text-emerald-700">Days 23-30: `return` & Strategy Document</h4>
+                                <div class="learning-task">
+                                    <h5>📚 Daily Learning (45 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Learn `return` Values: [W3Schools: Function Return Value](https://www.w3schools.com/python/python_functions.asp#Return_Value)</span></li>
+                                    </ul>
+                                </div>
+                                <div class="application-task">
+                                    <h5>🔨 Daily Application (90 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Create `def get_user_choice():`.</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Move `choice = input(...)` inside it.</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Add `return choice`.</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>In `main()`, change to `user_choice = get_user_choice()`. Update `if/elif` to use `user_choice`.</span></li>
+                                    </ul>
+                                </div>
+                                <div class="business-task">
+                                    <h5>🏆 Business Strategy (45 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Find 5-10 *more* products.</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>**FINAL TASK:** Create a text file `strategy.txt`. Write down: 1. Your Niche. 2. Your Customer. 3. Your Platform. 4. A list of 10-20 products with their links and commission %.</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ======================= -->
+                <!-- ==     Month 2       == -->
+                <!-- ======================= -->
+                <div id="content-month-2" class="page-content hidden space-y-6">
+                    <section class="p-6 bg-white rounded-lg shadow-sm">
+                        <h2 class="text-3xl font-bold text-red-700 mb-4">Month 2: The Content Engine (Scraping + AI)</h2>
+                        <p class="text-stone-700 leading-relaxed mb-4">
+                            This is an aggressive sprint. You are combining two months of work into one. The goal is to build the *core* of your bot: the part that finds product data and the part that writes a script about it.
+                        </p>
+                        <div class="flex flex-col md:flex-row gap-4 p-4 bg-red-50 rounded-lg">
+                            <div class="md:w-1/2">
+                                <h4 class="font-semibold text-red-800">💻 Technical Goal:</h4>
+                                <p class="text-red-700">A bot that can: 1. Scrape a site for product info. 2. Send that info to Gemini. 3. Save the resulting AI script to a text file.</p>
+                            </div>
+                            <div class="md:w-1/2 md:border-l border-red-200 md:pl-4">
+                                <h4 class="font-semibold text-amber-700">🏆 Business Goal:</h4>
+                                <p class="text-amber-600">A tested, high-quality "prompt template" that creates converting video scripts for your specific niche.</p>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <nav class="flex flex-wrap gap-2">
+                        <button class="sub-tab-button text-sm font-medium py-2 px-4 rounded-full bg-stone-200 text-stone-700 hover:bg-stone-300 active" data-target="m2-week1">Days 31-40: `requests` & `BeautifulSoup`</button>
+                        <button class="sub-tab-button text-sm font-medium py-2 px-4 rounded-full bg-stone-200 text-stone-700 hover:bg-stone-300" data-target="m2-week2">Days 41-50: Scraper Function & AI Setup</button>
+                        <button class="sub-tab-button text-sm font-medium py-2 px-4 rounded-full bg-stone-200 text-stone-700 hover:bg-stone-300" data-target="m2-week3">Days 51-60: AI Integration & Prompting</button>
+                    </nav>
+
+                    <div class="sub-content-container bg-white p-6 rounded-lg shadow-sm space-y-4">
+                        <div id="content-m2-week1" class="sub-page-content space-y-4">
+                            
+                            <div class="day-block">
+                                <h4 class="text-lg font-semibold text-red-700">Days 31-35: `requests` & `BeautifulSoup`</h4>
+                                <div class="learning-task">
+                                    <h5>📚 Daily Learning (45 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Install: <code class="task-code">pip install requests beautifulsoup4</code></span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Learn `requests`: [W3Schools: Python Requests](https://www.w3schools.com/python/module_requests.asp)</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Learn "Inspect Element" on your *real* affiliate sites.</span></li>
+                                    </ul>
+                                </div>
+                                <div class="application-task">
+                                    <h5>🔨 Daily Application (90 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>At top of file: <code class="task-code">import requests</code>, <code class="task-code">from bs4 import BeautifulSoup</code></span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Modify `find_products()` to scrape `quotes.toscrape.com` (see M3-W2 in previous answer).</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Run option "1". See a list of quotes.</span></li>
+                                    </ul>
+                                </div>
+                                <div class="business-task">
+                                    <h5>🏆 Business Strategy (45 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Go to your *actual* affiliate product pages from `strategy.txt`. "Inspect Element". Can you find the product name, price, and description in the HTML? (e.g., `<h1 class="product-title">...</h1>`). Note these tags.</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="day-block">
+                                <h4 class="text-lg font-semibold text-red-700">Days 36-40: Dictionaries & `return`</h4>
+                                <div class="learning-task">
+                                    <h5>📚 Daily Learning (45 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Learn Dictionaries: [W3Schools: Dictionaries](https://www.w3schools.com/python/python_dictionaries.asp)</span></li>
+                                    </ul>
+                                </div>
+                                <div class="aggressive-task">
+                                    <h5>🔨 Aggressive Application (135 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>**TASK:** Re-build `find_products()` to scrape *your real affiliate site* (or `quotes.toscrape` if it's too hard).</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>It MUST return a list of dictionaries (see M3-W3 in previous answer).</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>In `main()`, capture the returned list: <code class="task-code">products = find_products()</code>.</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Print the list. This is your goal for the week.</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div id="content-m2-week2" class="sub-page-content hidden space-y-4">
+                            
+                            <div class="day-block">
+                                <h4 class="text-lg font-semibold text-red-700">Days 41-45: File I/O & AI API Setup</h4>
+                                <div class="learning-task">
+                                    <h5>📚 Daily Learning (45 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Learn File Write: [W3Schools: File Write](https://www.w3schools.com/python/python_file_write.asp)</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>What is an API? [Red Hat](https://www.redhat.com/en/topics/api/what-is-an-api)</span></li>
+                                    </ul>
+                                </div>
+                                <div class="application-task">
+                                    <h5>🔨 Daily Application (90 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Practice writing to a file in `generate_content()` (see M4-W1).</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>In terminal: <code class="task-code">pip install google-generativeai</code></span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Go to [Google AI Studio](https://aistudio.google.com/app) and get your API key.</span></li>
+                                    </ul>
+                                </div>
+                                <div class="business-task">
+                                    <h5>🏆 Business Strategy (45 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>**Create Accounts:** Create your brand accounts (e.g., "AIWriterHacks") on your chosen platform. Upload a profile picture, write a bio.</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="day-block">
+                                <h4 class="text-lg font-semibold text-red-700">Days 46-50: Configure AI Client</h4>
+                                <div class="learning-task">
+                                    <h5>📚 Daily Learning (45 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Read: [Gemini Python Quickstart](https://ai.google.dev/tutorials/python_quickstart)</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Learn [Environment Variables](https://www.twilio.com/en-us/blog/environment-variables-windows-mac-linux)</span></li>
+                                    </ul>
+                                </div>
+                                <div class="application-task">
+                                    <h5>🔨 Daily Application (90 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>At top of file: <code class="task-code">import google.generativeai as genai</code>, <code class="task-code">import os</code></span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>In terminal (once per session): <code class="task-code">set GOOGLE_API_KEY=YOUR_KEY_HERE</code> (or `export`).</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Add the `genai.configure` block (see M4-W2) to your file.</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Run file. See "AI Model configured."</span></li>
+                                    </ul>
+                                </div>
+                                <div class="business-task">
+                                    <h5>🏆 Business Strategy (45 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>**Account Warm-up #1:** Make your first *manual* post. Just a tip or a question related to your niche. Look human.</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <div id="content-m2-week3" class="sub-page-content hidden space-y-4">
+                            <div class="day-block">
+                                <h4 class="text-lg font-semibold text-red-700">Days 51-60: AI Integration & Prompting</h4>
+                                <div class="learning-task">
+                                    <h5>📚 Daily Learning (45 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Read: [Google's Prompting Guide](https://ai.google.dev/gemini-api/docs/prompting-guide)</span></li>
+                                    </ul>
+                                </div>
+                                <div class="aggressive-task">
+                                    <h5>🔨 Aggressive Application (90 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Modify `generate_content(product_info):`</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Inside, build your *best* prompt template from your business research.</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Call the AI: <code class="task-code">response = model.generate_content(prompt)</code></span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Save to file: <code class="task-code">with open("video_script.txt", "w") as f: f.write(response.text)</code></span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Update `main()` to pass the product data (see M4-W3).</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Run "1" then "2". Check `video_script.txt`.</span></li>
+                                    </ul>
+                                </div>
+                                <div class="business-task">
+                                    <h5>🏆 Business Strategy (45 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Tweak your prompt template in `generate_content()` at least 5 times. Your goal is a script that sounds *amazing*.</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>**Account Warm-up #2:** Post manually again.</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ======================= -->
+                <!-- ==     Month 3       == -->
+                <!-- ======================= -->
+                <div id="content-month-3" class="page-content hidden space-y-6">
+                    <section class="p-6 bg-white rounded-lg shadow-sm">
+                        <h2 class="text-3xl font-bold text-red-700 mb-4">Month 3: Video Engine & *Manual Launch*</h2>
+                        <p class="text-stone-700 leading-relaxed mb-4">
+                            Goal: Build the final tech pieces (video + database) and *get your content into the market*. You will use your bot as a "content assistant" and post the videos manually to test the market and warm up your accounts.
+                        </p>
+                        <div class="flex flex-col md:flex-row gap-4 p-4 bg-red-50 rounded-lg">
+                            <div class="md:w-1/2">
+                                <h4 class="font-semibold text-red-800">💻 Technical Goal:</h4>
+                                <p class="text-red-700">A bot that can: 1. Find Product, 2. Write Script, 3. Save to Database, 4. Generate a `final_ad.mp4` video file.</p>
+                            </div>
+                            <div class="md:w-1/2 md:border-l border-red-200 md:pl-4">
+                                <h4 class="font-semibold text-amber-700">🏆 Business Goal:</h4>
+                                <p class="text-amber-600">Manually post 5-10 bot-generated videos to your platform, add your affiliate link, and get your first clicks.</p>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <nav class="flex flex-wrap gap-2">
+                        <button class="sub-tab-button text-sm font-medium py-2 px-4 rounded-full bg-stone-200 text-stone-700 hover:bg-stone-300 active" data-target="m3-week1">Days 61-70: `SQLite` Database</button>
+                        <button class="sub-tab-button text-sm font-medium py-2 px-4 rounded-full bg-stone-200 text-stone-700 hover:bg-stone-300" data-target="m3-week2">Days 71-80: `Pillow` (Image Gen)</button>
+                        <button class="sub-tab-button text-sm font-medium py-2 px-4 rounded-full bg-stone-200 text-stone-700 hover:bg-stone-300" data-target="m3-week3">Days 81-90: `ffmpeg` & Manual Launch</button>
+                    </nav>
+
+                    <div class="sub-content-container bg-white p-6 rounded-lg shadow-sm space-y-4">
+                        <div id="content-m3-week1" class="sub-page-content space-y-4">
+                            
+                            <div class="day-block">
+                                <h4 class="text-lg font-semibold text-red-700">Days 61-70: `SQLite` Database</h4>
+                                <div class="learning-task">
+                                    <h5>📚 Daily Learning (45 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Learn `sqlite3`: [Python `sqlite3` Tutorial](https://www.sqlitetutorial.net/sqlite-python/)</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Learn `CREATE TABLE`, `INSERT`, `SELECT`.</span></li>
+                                    </ul>
+                                </div>
+                                <div class="aggressive-task">
+                                    <h5>🔨 Aggressive Application (135 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>At top of file: <code class="task-code">import sqlite3</code>, <code class="task-code">from datetime import datetime</code></span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Build `def setup_database():` (see M5-W2).</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Build `def check_if_posted(product_name):` (see M5-W3).</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Build `def record_post(product_name):` (see M5-W3).</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Call `setup_database()` in `main()`.</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>In `generate_content()`, after saving the script, call `record_post(product_info['name'])`.</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div id="content-m3-week2" class="sub-page-content hidden space-y-4">
+                            
+                            <div class="day-block">
+                                <h4 class="text-lg font-semibold text-red-700">Days 71-80: `Pillow` (Image Gen)</h4>
+                                <div class="learning-task">
+                                    <h5>📚 Daily Learning (45 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>In terminal: <code class="task-code">pip install Pillow</code></span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Learn Pillow: [Pillow Tutorial](https://pillow.readthedocs.io/en/stable/handbook/tutorial.html)</span></li>
+                                    </ul>
+                                </div>
+                                <div class="application-task">
+                                    <h5>🔨 Daily Application (90 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>At top of file: <code class="task-code">from PIL import Image, ImageDraw, ImageFont</code></span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Modify `create_video()` to read `video_script.txt`.</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Create a loop to generate multiple frames (`frame_0.png`, `frame_1.png`, etc.), one for each line of the script. (See M6-W1 for code).</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Run "1" (find), "2" (write script), then "3" (make frames). Check your folder for images.</span></li>
+                                    </ul>
+                                </div>
+                                <div class="business-task">
+                                    <h5>🏆 Business Strategy (45 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>**Manual Post #3:** Post *manually* again.</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Open your generated `frame_0.png`. Does it look good? Is the text readable? Tweak the colors/fonts in your `create_video()` code.</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div id="content-m3-week3" class="sub-page-content hidden space-y-4">
+                            
+                            <div class="day-block">
+                                <h4 class="text-lg font-semibold text-red-700">Days 81-90: `ffmpeg` & MANUAL LAUNCH</h4>
+                                <div class="learning-task">
+                                    <h5>📚 Daily Learning (45 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Download `ffmpeg` executable from [ffmpeg.org](https://ffmpeg.org/download.html).</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Move `ffmpeg.exe` to your project folder.</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Learn `os.system`: [GeeksforGeeks](https://www.geeksforgeeks.org/python-os-system-method/)</span></li>
+                                    </ul>
+                                </div>
+                                <div class="application-task">
+                                    <h5>🔨 Daily Application (90 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>At the bottom of `create_video()`, add the `os.system()` call (see M6-W2).
+                                            <pre class="task-code-block">os.system("./ffmpeg -framerate 1 -i frame_%d.png -c:v libx264 -r 30 -pix_fmt yuv420p final_ad.mp4")</pre>
+                                        </span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Run the full flow: "1" (find), "2" (write), "3" (make video).</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>You should now have `final_ad.mp4` in your folder!</span></li>
+                                    </ul>
+                                </div>
+                                <div class="business-task">
+                                    <h5>🏆 Business Strategy (45 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>**MANUAL LAUNCH:** Take your `final_ad.mp4`. Add your affiliate link to your profile bio. Manually upload the video to your platform (YouTube Short, TikTok, etc.).</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Do this 5-10 times over these 10 days. Run the bot, get a video, post it.</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Check your affiliate dashboard. Did you get any *clicks*?</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ======================= -->
+                <!-- ==     Month 4       == -->
+                <!-- ======================= -->
+                <div id="content-month-4" class="page-content hidden space-y-6">
+                    <section class="p-6 bg-white rounded-lg shadow-sm">
+                        <h2 class="text-3xl font-bold text-red-700 mb-4">Month 4: Deployment & Full Automation</h2>
+                        <p class="text-stone-700 leading-relaxed mb-4">
+                            Goal: Go live. You will deploy your bot to the cloud and schedule it to run automatically. You will also build the Selenium function to post *for* you.
+                        </p>
+                        <div class="flex flex-col md:flex-row gap-4 p-4 bg-red-50 rounded-lg">
+                            <div class="md:w-1/2">
+                                <h4 class="font-semibold text-red-800">💻 Technical Goal:</h4>
+                                <p class="text-red-700">A bot that runs 100% automatically on a schedule on PythonAnywhere, posting one new video per day.</p>
+                            </div>
+                            <div class="md:w-1/2 md:border-l border-red-200 md:pl-4">
+                                <h4 class="font-semibold text-amber-700">🏆 Business Goal:</h4>
+                                <p class="text-amber-600">Your first automated clicks and (potentially) your first sale. Begin collecting performance data.</p>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <nav class="flex flex-wrap gap-2">
+                        <button class="sub-tab-button text-sm font-medium py-2 px-4 rounded-full bg-stone-200 text-stone-700 hover:bg-stone-300 active" data-target="m4-week1">Days 91-105: `Selenium` Poster</button>
+                        <button class="sub-tab-button text-sm font-medium py-2 px-4 rounded-full bg-stone-200 text-stone-700 hover:bg-stone-300" data-target="m4-week2">Days 106-120: Deployment</button>
+                    </nav>
+
+                    <div class="sub-content-container bg-white p-6 rounded-lg shadow-sm space-y-4">
+                        <div id="content-m4-week1" class="sub-page-content space-y-4">
+                            
+                            <div class="day-block">
+                                <h4 class="text-lg font-semibold text-red-700">Days 91-105: `Selenium` Poster</h4>
+                                <div class="learning-task">
+                                    <h5>📚 Daily Learning (45 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>In terminal: <code class="task-code">pip install selenium</code>. Download `chromedriver`.</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Learn Selenium: [Selenium Getting Started](https://selenium-python.readthedocs.io/getting-started.html)</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Learn: `find_element(By.NAME, "...")` and `.send_keys("...")`</span></li>
+                                    </ul>
+                                </div>
+                                <div class="aggressive-task">
+                                    <h5>🔨 Aggressive Application (135 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>At top of file: <code class="task-code">from selenium import webdriver</code>, etc.</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>**TASK:** Build the `post_to_social()` function. This is your main project.</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>It needs to: 1. Open Chrome. 2. Go to your platform (e.g., YouTube upload page). 3. Find the username/password fields and log in. 4. Find the "upload" button and send the path to `final_ad.mp4`. 5. Find the "description" box and add the script text + affiliate link. 6. Click "Post".</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>This is HARD. Use `time.sleep(10)` a lot to pause and see what your bot is doing.</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div id="content-m4-week2" class="sub-page-content hidden space-y-4">
+                            
+                            <div class="day-block">
+                                <h4 class="text-lg font-semibold text-red-700">Days 106-120: Deployment & GO LIVE</h4>
+                                <div class="learning-task">
+                                    <h5>📚 Daily Learning (45 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Sign up for [PythonAnywhere](https://www.pythonanywhere.com/) (Free tier).</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Read: [PythonAnywhere Scheduled Tasks](https://help.pythonanywhere.com/pages/ScheduledTasks/)</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Read: [PythonAnywhere Installing Modules](https://help.pythonanywhere.com/pages/InstallingNewModules/)</span></li>
+                                    </ul>
+                                </div>
+                                <div class="application-task">
+                                    <h5>🔨 Daily Application (90 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Go to "Files" tab on PythonAnywhere.</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Upload `affiliate_bot.py`.</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Go to "Consoles" -> "Bash".</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Install all modules: <code class="task-code">pip3.10 install --user requests beautifulsoup4 google-generativeai selenium Pillow</code></span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Configure your Environment Variable for the API key on PythonAnywhere.</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Go to "Tasks" tab. Schedule your bot to run once a day.</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Command: <code class="task-code">python3.10 /home/YourUsername/affiliate_bot.py</code></span></li>
+                                    </ul>
+                                </div>
+                                <div class="business-task">
+                                    <h5>🏆 Business Strategy (45 mins)</h5>
+                                    <ul class="list-none space-y-2 mt-2">
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>**LIVE:** Your bot is now automated. Your job is to check your affiliate dashboard *daily*. Are you getting clicks? Are you getting sales?</span></li>
+                                        <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Check your social media account. Is the bot posting correctly?</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ======================= -->
+                <!-- ==     Month 5       == -->
+                <!-- ======================= -->
+                <div id="content-month-5" class="page-content hidden space-y-6">
+                    <section class="p-6 bg-white rounded-lg shadow-sm">
+                        <h2 class="text-3xl font-bold text-amber-700 mb-4">Month 5: Analysis & Iteration (The $30 -> $300 Plan)</h2>
+                        <p class="text-stone-700 leading-relaxed mb-4">
+                            Your bot is LIVE. You are collecting money, but it's not $3,000. This month is dedicated to *analyzing* what works and *tweaking* your bot to make it 10x better. This is the real job of an automation business owner.
+                        </p>
+                        <div class="flex flex-col md:flex-row gap-4 p-4 bg-amber-50 rounded-lg">
+                            <div class="md:w-1/2">
+                                <h4 class="font-semibold text-amber-800">💻 Technical Goal:</h4>
+                                <p class="text-amber-700">Upgrade your bot to track *which* prompt and product led to a sale (by reading your affiliate reports). Tweak your `generate_content` function weekly.</p>
+                            </div>
+                            <div class="md:w-1/2 md:border-l border-amber-200 md:pl-4">
+                                <h4 class="font-semibold text-amber-800">🏆 Business Goal:</h4>
+                                <p class="text-amber-700">Find your first "winning" product or prompt. Identify *why* it worked. Get your first $100-$300 in commission.</p>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <div class="sub-content-container bg-white p-6 rounded-lg shadow-sm space-y-4">
+                        <div class="day-block">
+                            <h4 class="text-lg font-semibold text-amber-700">Days 121-135: The Feedback Loop</h4>
+                            <div class="learning-task">
+                                <h5>📚 Daily Learning (45 mins)</h5>
+                                <ul class="list-none space-y-2 mt-2">
+                                    <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Learn to read your affiliate dashboard (ClickBank, Amazon, etc.). What is "CTR"? What is "Conversion Rate"?</span></li>
+                                </ul>
+                            </div>
+                            <div class="business-task">
+                                <h5>🏆 Business Strategy (135 mins)</h5>
+                                <ul class="list-none space-y-2 mt-2">
+                                    <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Check your bot's database (`bot_memory.db`) vs. your affiliate dashboard.</span></li>
+                                    <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Ask: Which product got the most *clicks*?</span></li>
+                                    <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Go to your social media. Which video got the most *views*?</span></li>
+                                    <li class="task-item"><input type="checkbox" class="task-checkbox"><span>**Is there a correlation?** Did your most-viewed video also get the most clicks? WHY? (Was it the hook? The product?).</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="day-block">
+                            <h4 class="text-lg font-semibold text-amber-700">Days 136-150: Iteration</h4>
+                            <div class="aggressive-task">
+                                <h5>🔨 Aggressive Application (90 mins)</h5>
+                                <ul class="list-none space-y-2 mt-2">
+                                    <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Go into `affiliate_bot.py`.</span></li>
+                                    <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Find your prompt template in `generate_content()`.</span></li>
+                                    <li class="task-item"><input type="checkbox" class="task-checkbox"><span>**ITERATE:** Based on your analysis, *change the prompt*. (e.g., "All my videos with a question hook worked best. Change the prompt to: 'Start every script with a question.'").</span></li>
+                                    <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Upload the new `affiliate_bot.py` to PythonAnywhere.</span></li>
+                                </div>
+                            </div>
+                            <div class="business-task">
+                                <h5>🏆 Business Strategy (90 mins)</h5>
+                                <ul class="list-none space-y-2 mt-2">
+                                    <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Find 10 *new* affiliate products that are *similar* to your "winner".</span></li>
+                                    <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Add them to your scraper's target list.</span></li>
+                                    <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Let the newly-prompted bot run. You are now testing a new, better hypothesis.</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ======================= -->
+                <!-- ==     Month 6       == -->
+                <!-- ======================= -->
+                <div id="content-month-6" class="page-content hidden space-y-6">
+                    <section class="p-6 bg-white rounded-lg shadow-sm">
+                        <h2 class="text-3xl font-bold text-amber-700 mb-4">Month 6: A/B Testing & Scaling (The $300 -> $3000 Plan)</h2>
+                        <p class="text-stone-700 leading-relaxed mb-4">
+                            You are making consistent revenue. This month is about scaling. You will upgrade your bot to A/B test *for you* and increase its output to find more winners, faster. This is how you get to $3,000/mo.
+                        </p>
+                        <div class="flex flex-col md:flex-row gap-4 p-4 bg-amber-50 rounded-lg">
+                            <div class="md:w-1/2">
+                                <h4 class="font-semibold text-amber-800">💻 Technical Goal:</h4>
+                                <p class="text-amber-700">Upgrade `generate_content` to create *two* different scripts (e.g., one "Problem-focused", one "Benefit-focused"). Upgrade your DB to track which version was posted.</p>
+                            </div>
+                            <div class="md:w-1/2 md:border-l border-amber-200 md:pl-4">
+                                <h4 class="font-semibold text-amber-800">🏆 Business Goal:</h4>
+                                <p class="text-amber-700">Use A/B test data to find the *single best* video formula. Increase post frequency. Scale your revenue toward your goal.</p>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <div class="sub-content-container bg-white p-6 rounded-lg shadow-sm space-y-4">
+                        <div class="day-block">
+                            <h4 class="text-lg font-semibold text-amber-700">Days 151-165: A/B Testing Upgrade</h4>
+                            <div class="learning-task">
+                                <h5>📚 Daily Learning (45 mins)</h5>
+                                <ul class="list-none space-y-2 mt-2">
+                                    <li class="task-item"><input type="checkbox" class="task-checkbox"><span>What is A/B Testing? [Investopedia](https://www.investopedia.com/terms/a/ab-testing.asp)</span></li>
+                                    <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Learn SQL `ALTER TABLE`: [W3Schools: SQL ALTER TABLE](https://www.w3schools.com/sql/sql_alter.asp)</span></li>
+                                </ul>
+                            </div>
+                            <div class="aggressive-task">
+                                <h5>🔨 Aggressive Application (135 mins)</h5>
+                                <ul class="list-none space-y-2 mt-2">
+                                    <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Add a new column to your `posts` table (e.g., `prompt_version TEXT`).</span></li>
+                                    <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Modify `generate_content()` to randomly pick between two prompts: `prompt_A` and `prompt_B`.</span></li>
+                                    <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Modify `record_post()` to save which version was used (`"A"` or `"B"`).</span></li>
+                                    <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Upload the new bot. It is now A/B testing for you *automatically*.</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="day-block">
+                            <h4 class="text-lg font-semibold text-amber-700">Days 166-180: Scaling</h4>
+                            <div class="learning-task">
+                                <h5>📚 Daily Learning (45 mins)</h5>
+                                <ul class="list-none space-y-2 mt-2">
+                                    <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Read: "How to Scale an Affiliate Business" (Find articles on Google).</span></li>
+                                </ul>
+                            </div>
+                            <div class="business-task">
+                                <h5>🏆 Business Strategy (135 mins)</h5>
+                                <ul class="list-none space-y-2 mt-2">
+                                    <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Let your A/B test run for a week. Check your data. Did Prompt A or B get more clicks?</span></li>
+                                    <li class="task-item"><input type="checkbox" class="task-checkbox"><span>**DECISION:** Go into your code. Delete the losing prompt. Make the *winning* prompt your only prompt.</span></li>
+                                    <li class="task-item"><input type="checkbox" class="task-checkbox"><span>Find 20 *new* products. Add them to your scraper.</span></li>
+                                    <li class="task-item"><input type="checkbox" class="task-checkbox"><span>**SCALE:** Go to PythonAnywhere. Change your "Scheduled Task" from 1x per day to 2x or 3x per day.</span></li>
+                                    <li class="task-item"><input type="checkbox" class="task-checkbox"><span>You are now no longer a learner. You are a business owner, managing a sales bot that you built from scratch. Your job is to feed it new products and optimize its sales script (the prompt). This is the path to $3,000/mo.</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mainTabs = document.querySelectorAll('.tab-button');
+            const mainPages = document.querySelectorAll('.page-content');
+
+            // --- Main Tab Navigation ---
+            function switchTab(targetId) {
+                mainPages.forEach(page => {
+                    page.classList.toggle('hidden', page.id !== `content-${targetId}`);
+                });
+                mainTabs.forEach(tab => {
+                    tab.classList.toggle('active', tab.dataset.target === targetId);
+                });
+            }
+
+            mainTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    switchTab(tab.dataset.target);
+                });
+            });
+
+            // --- Sub-Tab Navigation ---
+            const subTabs = document.querySelectorAll('.sub-tab-button');
+            subTabs.forEach(subTab => {
+                subTab.addEventListener('click', () => {
+                    const targetId = subTab.dataset.target;
+                    
+                    // Deactivate siblings
+                    const parentNav = subTab.closest('nav');
+                    parentNav.querySelectorAll('.sub-tab-button').forEach(t => t.classList.remove('active'));
+                    
+                    // Activate clicked tab
+                    subTab.classList.add('active');
+                    
+                    // Show target content, hide siblings
+                    const parentContainer = subTab.closest('div.page-content').querySelector('.sub-content-container');
+                    parentContainer.querySelectorAll('.sub-page-content').forEach(content => {
+                        content.classList.toggle('hidden', content.id !== `content-${targetId}`);
+                    });
+                });
+            });
+
+
+            // --- Checkbox Persistence Logic ---
+            const allTasks = document.querySelectorAll('li.task-item');
+            
+            allTasks.forEach((taskLi, index) => {
+                const checkbox = taskLi.querySelector('.task-checkbox');
+                const span = Array.from(taskLi.children).find(child => child.tagName === 'SPAN');
+
+                if (checkbox && span) {
+                    const textContent = span.textContent.trim().substring(0, 50); 
+                    const simpleHash = textContent.replace(/[^a-zA-Z0-9]/g, ''); 
+                    const taskId = `task-item-${index}-${simpleHash}`; 
+                    
+                    if (localStorage.getItem(taskId) === 'true') {
+                        checkbox.checked = true;
+                        taskLi.classList.add('completed');
+                    }
+
+                    checkbox.addEventListener('change', (e) => {
+                        if (e.target.checked) {
+                            localStorage.setItem(taskId, 'true');
+                            taskLi.classList.add('completed');
+                        } else {
+                            localStorage.removeItem(taskId);
+                            taskLi.classList.remove('completed');
+                        }
+                    });
+                }
+            });
+            // --- End Checkbox Logic ---
+
+            switchTab('home');
+        });
+    </script>
+</body>
+</html>
+
